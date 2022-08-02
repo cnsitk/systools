@@ -37,7 +37,7 @@ starttime=${stat_array[21]}
 total_time=$(( $utime + $stime ))
 total_time=$(( $total_time + $cstime ))
 seconds=$( awk 'BEGIN {print ( '$uptime' - ('$starttime' / '$clock_ticks') )}' )
-cpu_usage = 0
+cpu_usage=0
 if  expr $seconds '>' 0 1>/dev/null; then
   cpu_usage=$( awk 'BEGIN {print ( 100 * (('$total_time' / ('$clock_ticks' * '$cpu_cores')) / '$seconds') )}' )
 fi
