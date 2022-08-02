@@ -14,7 +14,7 @@ if [ -z $TestPID ];  then
    echo "Progress Not Found!"
    exit -1
 fi
-
+cpu_cores=$(getconf _NPROCESSORS_ONLN)
 clock_ticks=$(getconf CLK_TCK)
 total_memory=$( grep -Po '(?<=MemTotal:\s{8})(\d+)' /proc/meminfo )
 stat_array=( `sed -E 's/(\([^\s)]+)\s([^)]+\))/\1_\2/g' /proc/$TestPID/stat` )
@@ -37,8 +37,9 @@ starttime=${stat_array[21]}
 total_time=$(( $utime + $stime ))
 total_time=$(( $total_time + $cstime ))
 seconds=$( awk 'BEGIN {print ( '$uptime' - ('$starttime' / '$clock_ticks') )}' )
+cpu_usage = 0
 if  expr $seconds '>' 0 1>/dev/null; then
-  cpu_usage=$( awk 'BEGIN {print ( 100 * (('$total_time' / '$clock_ticks') / '$seconds') )}' )
+  cpu_usage=$( awk 'BEGIN {print ( 100 * (('$total_time' / ('$clock_ticks' * '$cpu_cores')) / '$seconds') )}' )
 fi
 
 printf "MemInfo(KB):Total:$total_memory  RSS:$mem_rss PSS:$mem_pss Swap:$mem_swap Ref:$mem_ref Usage:%.4f\n" $memory_usage 
